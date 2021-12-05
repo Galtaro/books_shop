@@ -9,13 +9,17 @@ class Book(models.Model):
         verbose_name = "Книга"
         verbose_name_plural = "Книги"
 
-    title = models.CharField(max_length=100, db_index=True)
-    authors = models.ManyToManyField(User, related_name="books")
+    title = models.CharField(max_length=100, db_index=True, verbose_name="Название")
+    authors = models.ManyToManyField(User, related_name="books", verbose_name="Авторы")
     publish_date = models.DateField(auto_now=True)
-    text = models.TextField()
+    text = models.TextField(verbose_name="Содержание")
     rate = models.ManyToManyField(User, related_name="rated_books", through="myapp.RateBookUser")
     order = models.ManyToManyField(User, related_name="ordered_books", through="myapp.OrderBookUser")
-    price = models.DecimalField(max_digits=4, decimal_places=2)
+    price = models.DecimalField(max_digits=4, decimal_places=2, verbose_name="Цена", validators=[validators.MinValueValidator(0)])
+
+    def __str__(self):
+        return self.title
+
 
 class RateBookUser(models.Model):
     class Meta:
