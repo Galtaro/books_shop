@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+{% for book in books %}
+    {{book.title}}<br>
+    <h3>Authors:</h3>
+    {% for author in book.authors.all %}
+        {{ author.username}}<br>
+        {% endfor %}<br>
+    {{book.publish_date}}<br>
+    <h4>{{book.text}}</h4>
+    <h3>Price is {{book.price}}</h3>
+    <h3>Rate</h3>
+    {{book.avg_rate}}
+    {% for i in "12345" %}
+        <a href="{% url 'add-rate' rate=i book_id=book.id %}">rate {{i}}</a>
+    {% endfor %}
+    <h3>Total order is {{book.total_order}}</h3>
+        <form action="{% url 'order-book' book_id=book.id %}" method="post">
+            {% csrf_token %}
+            <label for="count">Count</label>
+            <input type="number" name="count" id="count">
+            <input type="submit" value="Ok">
+        </form>
+    <hr>
+{% endfor %}
+</body>
+</html>

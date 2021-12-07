@@ -28,12 +28,12 @@ class RateBookUser(models.Model):
         default=1,
         validators=[validators.MaxValueValidator(5), validators.MinValueValidator(1)]
         )
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="rate_book_user_user")
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name="rate_book_user_book")
 
 
 class OrderBookUser(models.Model):
     count = models.PositiveIntegerField(default=1)
-    date = models.DateTimeField(auto_created=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    date = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="order_book_user_user")
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name="order_book_user_book")
