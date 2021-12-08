@@ -16,6 +16,7 @@ class Book(models.Model):
     rate = models.ManyToManyField(User, related_name="rated_books", through="myapp.RateBookUser")
     order = models.ManyToManyField(User, related_name="ordered_books", through="myapp.OrderBookUser")
     price = models.DecimalField(max_digits=4, decimal_places=2, verbose_name="Цена", validators=[validators.MinValueValidator(0)])
+    country = models.ForeignKey("Country", on_delete=models.SET_DEFAULT, default=1)
 
     def __str__(self):
         return self.title
@@ -37,3 +38,22 @@ class OrderBookUser(models.Model):
     date = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="order_book_user_user")
     book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name="order_book_user_book")
+
+
+class Country(models.Model):
+    class Meta:
+        verbose_name = "Страна"
+        verbose_name_plural = "Страны"
+    name = models.CharField(max_length=20)
+
+    def __str__(self):
+        return self.name
+
+
+class Comment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="comments")
+    text = models.TextField()
+    date = models.DateTimeField(auto_now_add=True)
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name="comments")
+    like = models.ManyToManyField(User)
+

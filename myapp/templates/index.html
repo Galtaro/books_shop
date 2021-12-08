@@ -11,6 +11,7 @@
     {% for author in book.authors.all %}
         {{ author.username}}<br>
         {% endfor %}<br>
+    <h3>Country is {{ book.country}}</h3>
     {{book.publish_date}}<br>
     <h4>{{book.text}}</h4>
     <h3>Price is {{book.price}}</h3>
@@ -26,7 +27,15 @@
             <input type="number" name="count" id="count">
             <input type="submit" value="Ok">
         </form>
-    <hr>
+        <h3>Comments</h3>
+        {% for comment in book.comments.all %}
+            {{ comment.date }}
+            {{ comment.user }}
+            {{ comment.text }}
+            {{ comment.like.count }}
+        <br>
+        {% endfor %}
+        <hr>
 {% endfor %}
 </body>
 </html>
