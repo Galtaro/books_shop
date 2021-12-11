@@ -32,10 +32,26 @@
             {{ comment.date }}
             {{ comment.user }}
             {{ comment.text }}
-            {{ comment.like.count }}
-        <br>
+            {{ comment.likes }}
+            {% if comment.user == user %}
+                <form action="{% url 'delete-comment' comment_id=comment.id %}" method="post">
+                    {% csrf_token %}
+                    <input type="submit" value="delete">
+                </form>
+                <form action="{% url 'update-comment' comment_id=comment.id %}" method="get">
+                    {% csrf_token %}
+                    <input type="submit" value="update">
+                </form>
+            {% endif %}
+            <br>
         {% endfor %}
+        <form action="{% url 'add-comment' book_id=book.id %}" method="post">
+            {% csrf_token %}
+            <label for=>Comment</label>
+            <textarea type="text" name="comment" id="comment" rows="5"></textarea>
+            <input type="submit" value="Send">
         <hr>
 {% endfor %}
+
 </body>
 </html>

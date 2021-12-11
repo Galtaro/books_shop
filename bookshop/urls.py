@@ -22,6 +22,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('shop/', include("myapp.urls")),
 
+
 ]
 if settings.DEBUG:
     urlpatterns += [path('__debug__/', include(debug_toolbar.urls))]

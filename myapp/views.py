@@ -26,3 +26,33 @@ def order_book(request, book_id):
             book_id=book_id
         )
     return redirect("main-page")
+
+
+def add_comment(request, book_id):
+    if request.user.is_authenticated:
+        Comment.objects.create(
+            user_id=request.user.id,
+            text=request.POST.get("comment"),
+            book_id=book_id
+        )
+    return redirect("main-page")
+
+
+def delete_comment(request, comment_id):
+    if request.user.is_authenticated:
+        query_set = Comment.objects.filter(id=comment_id)
+        if query_set.exists():
+            if query_set.first().user.id == request.user.id:
+                query_set.delete()
+    return redirect("main-page")
+
+
+def update_comment(request, comment_id):
+    if request.user.is_authenticated:
+        comment_query = Comment.objects.filter(id=comment_id)
+        if comment_query.exists():
+            if request.method == "GET":
+                return render(request, "comment_form.html", {"comment": comment_query.first()})
+            if request.method == "POST":
+                comment_query.update(text=request.POST.get("comment"))
+    return redirect("main-page")
