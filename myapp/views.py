@@ -56,3 +56,9 @@ def update_comment(request, comment_id):
             if request.method == "POST":
                 comment_query.update(text=request.POST.get("comment"))
     return redirect("main-page")
+
+
+def like_comment(request, comment_id):
+    if request.user.is_authenticated:
+        Comment.objects.update(user_id=request.user.id, comment_id=comment_id)
+    return redirect("main-page")
