@@ -55,12 +55,4 @@ class Comment(models.Model):
     text = models.TextField()
     date = models.DateTimeField(auto_now_add=True)
     book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name="comments")
-    like = models.ManyToManyField(User, related_name="liked_comments", through="myapp.CommentLikeUser")
-
-
-class CommentLikeUser(models.Model):
-    class Meta:
-        unique_together = ("user", "comment")
-    like = models.PositiveIntegerField(default=0)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="Comment_Like_user_user")
-    comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name="Comment_like_user_comment")
+    like = models.ManyToManyField(User)

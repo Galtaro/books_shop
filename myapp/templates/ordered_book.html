@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    {% for o_book in ordered_book %}
+        <h3>Title is: {{ o_book.book.title }}</h3>
+        <h3>Count is: {{ o_book.count }}</h3>
+        <h3>Price is: {{ o_book.book.price }}</h3>
+        <h3>Total price is: {{ o_book.total_price|floatformat:2 }}</h3>
+        <hr>
+    {% endfor %}
+{{tt_sum|floatformat:2}}
+</body>
+</html>

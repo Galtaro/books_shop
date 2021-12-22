@@ -1,12 +1,51 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $("document").ready(function (){
+
+            $(".like").on( types: "click", selector: function (){
+                let id = $(this).attr( name: "id")
+
+                $.ajax(
+                    url "http://localhost:8000/api_v1/add_like_to_comment_ajax/" + id + "/",
+                    options: {
+                        success: function (data) {
+                            console.log(data)
+                            console.log("success")
+                            $("#count_of" + id).html(data["likes"])
+                        },
+                        error: function (data) {
+                            console.log(data)
+                            console.log("error")
+                        }
+                    }
+                )
+                console.log(id)
+            })
+    })
+    </script>
 </head>
 <body>
+{{user}}<br>
+<a href="{% url 'MyApp:my-account' %}">my Account</a><br>
 {% for book in books %}
     {{book.title}}<br>
+    {% if user in book.authors.all %}
+    <form action="{% url 'MyApp:update-book' book_id=book.id %}" method="get">
+        {% csrf_token %}
+        <input type="submit" value="update">
+    </form>
+{% endif %}
+    <br>
+    <form action="{% url 'MyApp:delete-book' book_id=book.id %}" method="post">
+        {% csrf_token %}
+        <input type="submit" value="delete">
+    </form>
     <h3>Authors:</h3>
     {% for author in book.authors.all %}
         {{ author.username}}<br>
@@ -18,10 +57,10 @@
     <h3>Rate</h3>
     {{book.avg_rate}}
     {% for i in "12345" %}
-        <a href="{% url 'add-rate' rate=i book_id=book.id %}">rate {{i}}</a>
+        <a href="{% url 'MyApp:add-rate' rate=i book_id=book.id %}">rate {{i}}</a>
     {% endfor %}
     <h3>Total order is {{book.total_order}}</h3>
-        <form action="{% url 'order-book' book_id=book.id %}" method="post">
+        <form action="{% url 'MyApp:order-book' book_id=book.id %}" method="post">
             {% csrf_token %}
             <label for="count">Count</label>
             <input type="number" name="count" id="count">
@@ -32,24 +71,21 @@
             {{ comment.date }}
             {{ comment.user }}
             {{ comment.text }}
-            {{ comment.likes }}
-            <form action="{% url 'like-comment' comment_id=comment.id %}" method="post">
-                    {% csrf_token %}
-                    <input type="submit" value="like">
-                </form>
+            <i id="count_of {{ comment.id }} "> {{ comment.likes }} </i>
+            <h3 class="like" id = {{ comment.id }}>like</h3>
             {% if comment.user == user %}
-                <form action="{% url 'delete-comment' comment_id=comment.id %}" method="post">
+                <form action="{% url 'MyApp:delete-comment' comment_id=comment.id %}" method="post">
                     {% csrf_token %}
                     <input type="submit" value="delete">
                 </form>
-                <form action="{% url 'update-comment' comment_id=comment.id %}" method="get">
+                <form action="{% url 'MyApp:update-comment' comment_id=comment.id %}" method="get">
                     {% csrf_token %}
                     <input type="submit" value="update">
                 </form>
             {% endif %}
         <br>
         {% endfor %}
-        <form action="{% url 'add-comment' book_id=book.id %}" method="post">
+        <form action="{% url 'MyApp:add-comment' book_id=book.id %}" method="post">
             {% csrf_token %}
             <label for=>Comment</label>
             <textarea type="text" name="comment" id="comment" rows="5"></textarea>

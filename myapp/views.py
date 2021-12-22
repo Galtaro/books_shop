@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from myapp.models import Book, RateBookUser, OrderBookUser, Comment
-from django.db.models import Avg, Sum, Prefetch, Count
+from django.db.models import Avg, Sum, Prefetch, Count, F
+from django.http import JsonResponse
 
 
 def hello(request):
@@ -15,7 +16,7 @@ def hello(request):
 def add_rate(request, rate, book_id):
     if request.user.is_authenticated:
         RateBookUser.objects.update_or_create(user_id=request.user.id, book_id=book_id, defaults={"rate":rate})
-    return redirect("main-page")
+    return redirect("MyApp:main-page")
 
 
 def order_book(request, book_id):
@@ -25,7 +26,7 @@ def order_book(request, book_id):
             user_id=request.user.id,
             book_id=book_id
         )
-    return redirect("main-page")
+    return redirect("MyApp:main-page")
 
 
 def add_comment(request, book_id):
@@ -35,7 +36,7 @@ def add_comment(request, book_id):
             text=request.POST.get("comment"),
             book_id=book_id
         )
-    return redirect("main-page")
+    return redirect("MyApp:main-page")
 
 
 def delete_comment(request, comment_id):
@@ -44,7 +45,7 @@ def delete_comment(request, comment_id):
         if query_set.exists():
             if query_set.first().user.id == request.user.id:
                 query_set.delete()
-    return redirect("main-page")
+    return redirect("MyApp:main-page")
 
 
 def update_comment(request, comment_id):
@@ -55,10 +56,60 @@ def update_comment(request, comment_id):
                 return render(request, "comment_form.html", {"comment": comment_query.first()})
             if request.method == "POST":
                 comment_query.update(text=request.POST.get("comment"))
-    return redirect("main-page")
+    return redirect("MyApp:main-page")
 
 
 def like_comment(request, comment_id):
     if request.user.is_authenticated:
-        Comment.objects.update(user_id=request.user.id, comment_id=comment_id)
-    return redirect("main-page")
+        comment = Comment.objects.get(id=comment_id)
+        if request.user in comment.like.all():
+            comment.like.remove(request.user)
+        else:
+            comment.like.add(request.user)
+        comment.save()
+    return redirect("MyApp:main-page")
+
+
+def update_book(request, book_id):
+    if request.user.is_authenticated:
+        book_query = Book.objects.filter(id=book_id)
+        if book_query.exists():
+            users = book_query.first().authors.all()
+            if request.user in users:
+                if request.method == "GET":
+                    return render(request, "book_form.html", {"book": book_query.first()})
+                if request.method == "POST":
+                    book_query.update(text=request.POST.get("book"))
+    return redirect("MyApp:main-page")
+
+
+def delete_book(request, book_id):
+    if request.user.is_authenticated:
+        query_set = Book.objects.filter(id=book_id)
+        if query_set.exists():
+            users = Book.objects.filter().authors.all()
+            if request.user.id in users:
+                query_set.delete()
+    return redirect("MyApp:main-page")
+
+
+def my_account(request):
+    if request.user.is_authenticated:
+        ordered_book_query_set = OrderBookUser.objects.filter(user_id=request.user.id).select_related("book").order_by("book__title")
+        ordered_book_query_set = ordered_book_query_set.annotate(total_price=F("book__price") * F("count"))
+        ordered_book_query_set = ordered_book_query_set.only("count", "date", "book__title", "book__price")
+    tt_price = ordered_book_query_set.aggregate(tt_sum=Sum("total_price"))
+    context = {"ordered_book": ordered_book_query_set}
+    context.update(tt_price)
+    return render(request, "ordered_book.html", context)
+
+
+def add_like_to_comment_ajax(request, comment_id):
+    if request.user.is_authenticated:
+        comment = Comment.objects.get(id=comment_id)
+        if request.user in comment.like.all():
+            comment.like.remove(request.user)
+        else:
+            comment.like.add(request.user)
+        comment.save()
+        return JsonResponse({"likes": comment.like.count()})
