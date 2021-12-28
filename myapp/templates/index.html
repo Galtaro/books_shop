@@ -5,34 +5,15 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script>
-        $("document").ready(function (){
-
-            $(".like").on( types: "click", selector: function (){
-                let id = $(this).attr( name: "id")
-
-                $.ajax(
-                    url "http://localhost:8000/api_v1/add_like_to_comment_ajax/" + id + "/",
-                    options: {
-                        success: function (data) {
-                            console.log(data)
-                            console.log("success")
-                            $("#count_of" + id).html(data["likes"])
-                        },
-                        error: function (data) {
-                            console.log(data)
-                            console.log("error")
-                        }
-                    }
-                )
-                console.log(id)
-            })
-    })
-    </script>
+    <script src="{% static 'script.js' %}"></script>
 </head>
 <body>
-{{user}}<br>
-<a href="{% url 'MyApp:my-account' %}">my Account</a><br>
+{{ user }}<br>
+{% if user.is_authenticated %}
+    <a href="{% url 'MyApp:logout' %}">logout</a>
+{% else %}
+    <a href="{% url 'MyApp:login' %}">login</a>
+{% endif %}<br>
 {% for book in books %}
     {{book.title}}<br>
     {% if user in book.authors.all %}
@@ -48,12 +29,12 @@
     </form>
     <h3>Authors:</h3>
     {% for author in book.authors.all %}
-        {{ author.username}}<br>
+        {{ author.username }}<br>
         {% endfor %}<br>
-    <h3>Country is {{ book.country}}</h3>
+    <h3>Country is {{ book.country }}</h3>
     {{book.publish_date}}<br>
     <h4>{{book.text}}</h4>
-    <h3>Price is {{book.price}}</h3>
+    <h3>Price is {{ book.price }}</h3>
     <h3>Rate</h3>
     {{book.avg_rate}}
     {% for i in "12345" %}
@@ -71,8 +52,8 @@
             {{ comment.date }}
             {{ comment.user }}
             {{ comment.text }}
-            <i id="count_of {{ comment.id }} "> {{ comment.likes }} </i>
-            <h3 class="like" id = {{ comment.id }}>like</h3>
+            <i id="count_of{{ comment.id }}">{{ comment.likes }}</i>
+            <h3 class="like" id="{{ comment.id }}">like</h3>
             {% if comment.user == user %}
                 <form action="{% url 'MyApp:delete-comment' comment_id=comment.id %}" method="post">
                     {% csrf_token %}
@@ -92,6 +73,5 @@
             <input type="submit" value="Send">
         <hr>
 {% endfor %}
-
 </body>
 </html>

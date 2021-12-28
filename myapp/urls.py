@@ -13,6 +13,8 @@ urlpatterns = [
     path("like_comment/<int:comment_id>/", views.like_comment, name="like-comment"),
     path("update_book/<int:book_id>/", views.update_book, name="update-book"),
     path("delete_book/<int:book_id>/", views.delete_book, name="delete-book"),
-    path("my_account/", views.my_account, name="my-account"),
-    path("add_like_to_comment_ajax/<int:comment_id>/", views.add_like_to_comment_ajax)
+    path("my_account_book/", views.my_account_book, name="my-account-book"),
+    path("add_like_to_comment_ajax/<int:comment_id>/", views.add_like_to_comment_ajax),
+    path("logout/", views.logout_view, name="logout"),
+    path("login/", views.login_view, name="login")
 ]

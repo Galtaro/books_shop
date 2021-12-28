@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <form action="{% url 'Hotel:change-booking-date' room_id=ordered_room.id %}" method="post">
+            {% csrf_token %}
+        <label for="start_date">Start Date</label>
+        <input type="date" name="start_date" id="start_date" value="{{ordered_room.start_date|date:'Y-m-d'}}">
+        <br>
+        <label for="end_date">End Date</label>
+        <input type="date" name="end_date" id="end_date" value="{{ordered_room.end_date|date:'Y-m-d'}}">
+        <br>
+        <input type="submit" value="Ok">
+    </form>
+</body>
+</html>

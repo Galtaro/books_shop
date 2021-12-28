@@ -9,7 +9,7 @@
         <h3>Room number: {{ room.number }}</h3>
         <h3>Capacity: {{ room.capacity }}</h3>
         <h3>Description: {{ room.description }}</h3>
-        <h3>Condition is available {{room.condition }}</h3>
+        <h3>Condition is available {{ room.condition }}</h3>
         <h3>Price: {{ room.price|floatformat:2 }}</h3>
         <img src="{{ room.image.url }}" height="150">
         <form action="{% url 'Hotel:order-room' room_id=room.id %}" method="post">

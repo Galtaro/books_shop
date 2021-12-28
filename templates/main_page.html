@@ -5,6 +5,11 @@
     <title>Title</title>
 </head>
 <body>
+    {% if request.user.is_authenticated %}
+        Hello, {{ user }}
+        <a href="{% url 'my-account' %}">my Account</a><br>
+    {% endif %}
+    <br>
     <a href="{% url 'MyApp:main-page' %}">Book Shop</a>
     <br>
     <a href="{% url 'Hotel:search-room' %}">Hotel</a>
